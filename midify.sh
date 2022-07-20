@@ -10,7 +10,8 @@
 # Change the default midi player.
 # 1 = timidity
 # 2 = pioplemidi-cli
-# 3 = custom command
+# 3 = playmidi (OSX Midi player)
+# 4 = custom command
 MIDIPLAYER=1
 
 # Custom MIDI player command (in case 3 is selected):
@@ -39,11 +40,23 @@ mkdir $TEMP
 
 # Define Functions:
 
+# Generate random number in range:
+genrandinrange () {
+  if command -v jot &> /dev/null
+  then
+    jot -w %i -r 1 $1 $(($2 + 1))
+  fi
+  if command -v shuf &> /dev/null
+  then
+    shuf -i $1-$2 -n 1
+  fi
+}
+
 # Get a random line of a file
 # Usage: $(getlineoffile <file>)
 getlineoffile () {
   MAXLINE=$(sed -n '$=' "$1")
-  LINE=$(shuf -i 1-$MAXLINE -n 1)
+  LINE=$(genrandinrange 1 $MAXLINE)
   echo $(sed "${LINE}q;d" "$1")
 }
 
@@ -90,7 +103,7 @@ play_playlist () {
     do
       PLFILE="$MIDIFYLOCAL/lists/$PLIST.mm3u"
       MAXLINE=$(sed -n '$=' "$PLFILE")
-      LINE=$(shuf -i 1-$MAXLINE -n 1)
+      LINE=$(genrandinrange 1 $MAXLINE)
       MFILE=$(sed "${LINE}q;d" "$PLFILE")
       play_song $MIDIFYLOCAL/midi/$MFILE
       sleep 1
@@ -102,7 +115,7 @@ play_playlist () {
     do
       PLFILE=$TEMP/playlist.mm3u
       MAXLINE=$(sed -n '$=' "$PLFILE")
-      LINE=$(shuf -i 1-$MAXLINE -n 1)
+      LINE=$(genrandinrange 1 $MAXLINE)
       MFILE=$(sed "${LINE}q;d" "$PLFILE")
       curl -q $MIDIFYSERVER/midi/$MFILE > $TEMP/$MFILE
       play_song $TEMP/$MFILE
@@ -119,8 +132,11 @@ play_song () {
     timidity -A 50 "$1" >/dev/null
   elif [ "$MIDIPLAYER" = "2" ]
   then
-    pioplemidi-cli "$1" -nl -fp -frb -s
+    playmidi "$1"
   elif [ "$MIDIPLAYER" = "3" ]
+  then
+    pioplemidi-cli "$1" -nl -fp -frb -s
+  elif [ "$MIDIPLAYER" = "4" ]
   then
     $MIDIPROG "$1"
   else
