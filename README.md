@@ -12,7 +12,7 @@ ___
 ## Installation
 To use this program, you need to install the `curl` package according to your OSes package managers instrucions. Under for example Debian that would be `sudo apt install curl`.
 
-You will also need a MIDI file player. On default it tries to use `timidity` but you can change that in the configuration. Another good choice is (my own OPL3 emulator midi player)[https://github.com/iAmInActions/pioplemidi-cli] but any player should do the job.
+You will also need a MIDI file player. On default it tries to use `timidity` but you can change that in the configuration. Another good choice is [my own OPL3 emulator midi player](https://github.com/iAmInActions/pioplemidi-cli) but any player should do the job.
 
 If you have git installed, clone the program with the following command:
 ```
